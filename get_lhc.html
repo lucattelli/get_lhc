@@ -1,0 +1,59 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+var linksHtml = "";
+var scriptHtml = "";
+
+function pad(num, size) {
+  var s = "000000000" + num;
+  return s.substr(s.length-size);
+}
+
+function downloadScript() {
+  var hiddenElement = document.createElement('a');
+  hiddenElement.href = 'data:attachment/text,' + encodeURI(scriptHtml);
+  hiddenElement.target = '_blank';
+  hiddenElement.download = $("#course").val() + '.bat';
+  hiddenElement.click();
+}
+
+function display_data() {
+  if ($("#course").val() === "" || $("#pages").val() === "" || $("#swftoolspath").val() === "") {
+    alert("Mandatory fields not filled!");
+    return false;
+  }
+  for (i = 1; i<=$("#pages").val(); i++) {
+    var pageId = "page" + pad(i, 4);
+    linksHtml = linksHtml + "<a href='" + "https://saplearninghub.plateau.com/icontent_e/CUSTOM_eu/sap/self-managed/Handbook/" + $("#course").val() + "/files/assets/flash/pages/" + pageId + ".swf" + "'>" + i + "</a>; ";
+    scriptHtml = scriptHtml + '"' + $("#swftoolspath").val() + 'swfrender.exe" ' + pageId + '.swf -o ' + pageId + '.png\n';
+  }
+  $("#links").html("<small>" + linksHtml + "</small>");
+  $("#script").html("<button onclick='downloadScript()'>Download Script</button>");
+}
+</script>
+</head>
+<body>
+<div id="instructions">
+<ol>
+<li>First, open SAP Learning Hub, login and open the course flipbook.</li>
+<li>Then, use the course flipbook name and number of pages to fill the data below.</li>
+<li>Hit go, then download the links using your favorite plugin.</li>
+<li>Now, download the BAT script containing the conversion from SWF => PNG commands.</li>
+<li>Use this service to convert the PNG images to PDF: https://smallpdf.com/jpg-to-pdf</li>
+</ol>
+</div>
+<hr/>
+<div id="panel">
+<label style="font-size : 0.7em; font-family : Arial">Course ID: </label><input id="course" type="text" name="course" value="SAPX04_EN_Col95" style="font-size : 0.7em"/>
+<label style="font-size : 0.7em; font-family : Arial; margin-left : 20px"># of pages: </label><input id="pages" type="text" name="pages" value="246" style="font-size : 0.7em"/>
+<label style="font-size : 0.7em; font-family : Arial; margin-left : 20px">Path to SWFTools: </label><input id="swftoolspath" type="text" name="swftoolspath" value="c:\Program Files (x86)\SWFTools\" size="35" style="font-size : 0.7em"/>
+<button onclick="display_data()" style="margin-left : 20px; font-size : 0.7em">Go</button>
+</div>
+<hr/>
+<h3>Links:</h3>
+<div id="links" style="background-color : #eee; padding : 10px;"></div>
+<h3>SWFTools Script:</h3>
+<div id="script" style="font-family : 'Courier New'; font-size : 0.7em; background-color : #eee; padding : 10px;"></div>
+</body>
+</html>
